@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIOps | Command Center</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="glow-layer"></div>
+    
+    <nav>
+        <div class="logo">AIOps<span>Engine</span></div>
+        <div id="connection-status" class="status-indicator">
+            <span class="dot"></span>
+            <span class="text">CONNECTING...</span>
+        </div>
+    </nav>
+
+    <main>
+        <section class="metrics-grid">
+            <div class="card" id="cpu-card">
+                <div class="card-header">
+                    <span class="icon">💻</span>
+                    <h3>CPU Usage</h3>
+                </div>
+                <div class="value"><span id="cpu-val">--</span>%</div>
+                <div class="progress-bar"><div id="cpu-bar" class="fill"></div></div>
+            </div>
+
+            <div class="card" id="mem-card">
+                <div class="card-header">
+                    <span class="icon">🧠</span>
+                    <h3>Memory Usage</h3>
+                </div>
+                <div class="value"><span id="mem-val">--</span>MB</div>
+                <div class="progress-bar"><div id="mem-bar" class="fill"></div></div>
+            </div>
+
+            <div class="card" id="latency-card">
+                <div class="card-header">
+                    <span class="icon">⏱️</span>
+                    <h3>Latency</h3>
+                </div>
+                <div class="value"><span id="latency-val">--</span>ms</div>
+                <div class="progress-bar"><div id="latency-bar" class="fill"></div></div>
+            </div>
+        </section>
+
+        <section class="control-panel">
+            <div class="card full-width">
+                <div class="card-header">
+                    <span class="icon">🔥</span>
+                    <h3>Incident Injection (Chaos Engineering)</h3>
+                </div>
+                <div class="button-group">
+                    <button onclick="toggleStress('cpu_spike')" id="btn-cpu">SPIKE CPU</button>
+                    <button onclick="toggleStress('memory_leak')" id="btn-mem">LEAK MEMORY</button>
+                    <button onclick="toggleStress('high_latency')" id="btn-lat">INJECT LATENCY</button>
+                    <button onclick="toggleStress('error_mode')" id="btn-err">INJECT ERRORS</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="log-panel">
+            <div class="card full-width">
+                <div class="card-header">
+                    <span class="icon">📜</span>
+                    <h3>AIOps Pipeline Logs</h3>
+                </div>
+                <div id="log-terminal" class="terminal">
+                    <div class="line muted">> System initialized. Waiting for telemetry...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        Deployed at: <a id="api-link" href="#" target="_blank">Loading...</a>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
