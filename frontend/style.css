@@ -51,8 +51,23 @@ nav {
 .logo span {
     background: linear-gradient(to right, var(--primary), var(--secondary));
     -webkit-background-clip: text;
-    -webkit-fill-color: transparent;
-    color: transparent;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+.card.anomaly {
+    border-color: var(--danger) !important;
+    animation: shake 0.5s ease-in-out;
+    box-shadow: 0 0 20px rgba(255, 75, 43, 0.2);
 }
 
 .status-indicator {

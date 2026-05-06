@@ -90,9 +90,13 @@ def get_history():
     try:
         conn = sqlite3.connect("../data/feedback.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM incidents ORDER BY timestamp DESC LIMIT 10")
+        cursor.execute("SELECT timestamp, metrics, log_classification, action, success FROM incidents ORDER BY timestamp DESC LIMIT 10")
         rows = cursor.fetchall()
         conn.close()
-        return {"history": rows}
+        history = [
+            {"time": r[0], "metrics": r[1], "log": r[2], "action": r[3], "success": bool(r[4])}
+            for r in rows
+        ]
+        return {"history": history}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

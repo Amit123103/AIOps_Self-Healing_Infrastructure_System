@@ -1,10 +1,14 @@
-const API_BASE = "https://aiops-self-healing-infrastructure-system.onrender.com";
+const MICROSERVICE_URL = "https://aiops-self-healing-infrastructure-system.onrender.com";
+const ENGINE_URL = "https://aiops-engine-backend.onrender.com"; // Placeholder, user can update
+
 const terminal = document.getElementById('log-terminal');
 const statusIndicator = document.getElementById('connection-status');
 const apiLink = document.getElementById('api-link');
 
-apiLink.href = API_BASE;
-apiLink.innerText = API_BASE;
+apiLink.href = MICROSERVICE_URL;
+apiLink.innerText = `Connected: ${MICROSERVICE_URL}`;
+
+let lastHistoryTime = "";
 
 let activeModes = {
     cpu_spike: false,
@@ -23,10 +27,9 @@ function log(msg, type = '') {
 
 async function fetchMetrics() {
     try {
-        const response = await fetch(`${API_BASE}/metrics`);
+        const response = await fetch(`${MICROSERVICE_URL}/metrics`);
         const text = await response.text();
         
-        // Parse Prometheus metrics
         const cpuMatch = text.match(/app_cpu_usage_percent ([\d\.]+)/);
         const memMatch = text.match(/app_memory_usage_bytes ([\d\.]+)/);
         const latMatch = text.match(/app_request_latency_seconds_sum ([\d\.]+)/);
@@ -38,27 +41,48 @@ async function fetchMetrics() {
         updateUI(cpu, mem, lat);
         statusIndicator.classList.add('online');
         statusIndicator.querySelector('.text').innerText = 'SYSTEM ONLINE';
+        
+        // Also fetch AI history
+        fetchHistory();
     } catch (e) {
         statusIndicator.classList.remove('online');
         statusIndicator.querySelector('.text').innerText = 'CONNECTION LOST';
-        log("Connection error to AIOps API", "alert");
+    }
+}
+
+async function fetchHistory() {
+    try {
+        const response = await fetch(`${ENGINE_URL}/api/actions/history`);
+        const data = await response.json();
+        if (data.history && data.history.length > 0) {
+            const latest = data.history[0];
+            if (latest.time !== lastHistoryTime) {
+                lastHistoryTime = latest.time;
+                log(`AI DECISION: ${latest.action} | SUCCESS: ${latest.success}`, latest.success ? 'success' : 'alert');
+            }
+        }
+    } catch (e) {
+        // AI Engine might be offline, ignore silently
     }
 }
 
 function updateUI(cpu, mem, lat) {
+    const cpuCard = document.getElementById('cpu-card');
+    const latCard = document.getElementById('latency-card');
+
     document.getElementById('cpu-val').innerText = cpu;
     document.getElementById('cpu-bar').style.width = `${Math.min(cpu, 100)}%`;
+    cpuCard.classList.toggle('anomaly', cpu > 80);
     
     document.getElementById('mem-val').innerText = mem;
     document.getElementById('mem-bar').style.width = `${Math.min((mem/512)*100, 100)}%`;
     
     document.getElementById('latency-val').innerText = lat;
     document.getElementById('latency-bar').style.width = `${Math.min((lat/2000)*100, 100)}%`;
+    latCard.classList.toggle('anomaly', lat > 1000);
 
-    // Visual Alerts
-    if (cpu > 80 || lat > 1000) {
-        log(`ANOMALY DETECTED: ${cpu > 80 ? 'CPU High' : 'Latency High'}`, "alert");
-    }
+    if (cpu > 80) log("CRITICAL: CPU Spike detected by monitor!", "alert");
+    if (lat > 1000) log("CRITICAL: High Latency detected by monitor!", "alert");
 }
 
 async function toggleStress(mode) {
@@ -66,18 +90,15 @@ async function toggleStress(mode) {
     const btn = document.getElementById(`btn-${mode.split('_')[0]}`);
     
     try {
-        log(`Triggering chaos mode: ${mode} -> ${activeModes[mode]}`, activeModes[mode] ? 'alert' : 'success');
-        const response = await fetch(`${API_BASE}/stress`, {
+        log(`Injecting Fault: ${mode}...`, activeModes[mode] ? 'alert' : 'success');
+        await fetch(`${MICROSERVICE_URL}/stress`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ mode: mode, active: activeModes[mode] })
         });
-        
-        if (response.ok) {
-            btn.classList.toggle('active');
-        }
+        btn.classList.toggle('active');
     } catch (e) {
-        log("Failed to send chaos command", "alert");
+        log("Failed to inject fault. Check API connection.", "alert");
     }
 }
 
