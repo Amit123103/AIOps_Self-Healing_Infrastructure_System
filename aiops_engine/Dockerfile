@@ -18,7 +18,7 @@ COPY . .
 # For demonstration, we'll start both using a shell script
 RUN echo '#!/bin/bash\n\
 python pipeline.py &\n\
-uvicorn main:app --host 0.0.0.0 --port 8001\n\
+uvicorn main:app --host 0.0.0.0 --port ${PORT:-8001}\n\
 ' > start.sh && chmod +x start.sh
 
 EXPOSE 8001
