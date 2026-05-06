@@ -72,6 +72,9 @@ jobs:
       packages: write
     # Only push images on merges to main, not on PRs
     if: github.event_name == 'push'
+    env:
+      IMAGE_NAME_MICROSERVICE: ""
+      IMAGE_NAME_AIOPS: ""
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
