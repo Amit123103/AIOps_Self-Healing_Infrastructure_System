@@ -1,12 +1,12 @@
 const MICROSERVICE_URL = "https://aiops-self-healing-infrastructure-system.onrender.com";
-const ENGINE_URL = "https://aiops-engine-backend.onrender.com"; // Placeholder, user can update
+const ENGINE_URL = "https://aiops-self-healing-infrastructure-system-3n5p.onrender.com";
 
 const terminal = document.getElementById('log-terminal');
 const statusIndicator = document.getElementById('connection-status');
 const apiLink = document.getElementById('api-link');
 
 apiLink.href = MICROSERVICE_URL;
-apiLink.innerText = `Connected: ${MICROSERVICE_URL}`;
+apiLink.innerText = `Connected: API & Engine Live`;
 
 let lastHistoryTime = "";
 
