@@ -1,3 +1,4 @@
+# AIOps_Self-Healing_Infrastructure_System
 # AI-Based Self-Healing Infrastructure System (AIOps)
 
 ## Overview
@@ -6,22 +7,12 @@ A production-ready AIOps system demonstrating a closed-loop architecture: **Obse
 It monitors a sample microservice using Prometheus and ELK, detects anomalies using Isolation Forest & Autoencoders, classifies logs using NLP, makes remediation decisions, executes Kubernetes actions (scaling, restarting), and learns from the outcomes.
 
 ## Architecture Diagram
-```text
-+-------------------+      +-------------------+      +-------------------+
-|  Microservice     | ---> | Prometheus        | ---> | AIOps Engine      |
-|  (FastAPI)        |      | (Metrics)         |      | (Observe/Detect)  |
-+-------------------+      +-------------------+      +---------+---------+
-         |                                                      |
-         v                                                      v
-+-------------------+      +-------------------+      +---------+---------+
-|  Filebeat/StdOut  | ---> | Logstash/Elastic  | ---> | Decision Engine   |
-+-------------------+      +-------------------+      +---------+---------+
-                                                                |
-+-------------------+                                           v
-| Feedback Loop     | <-------------------------------| K8s Actions (Act) |
-| (SQLite + ML)     |                                 +-------------------+
-+-------------------+
-```
+
+![System Architecture](assets/architecture_diagram.jpg)
+
+### AIOps Closed-Loop Sequence
+![Logic Sequence Diagram](assets/sequence_diagram.jpg)
+
 
 ## Prerequisites
 - Docker & Docker Compose
