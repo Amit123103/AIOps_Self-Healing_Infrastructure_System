@@ -4,11 +4,21 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
-import tensorflow as tf
-from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import Dense
 import joblib
 import logging
+
+LOW_MEMORY_MODE = os.getenv("LOW_MEMORY_MODE", "false").lower() == "true"
+
+if not LOW_MEMORY_MODE:
+    try:
+        import tensorflow as tf
+        from tensorflow.keras.models import Sequential, load_model
+        from tensorflow.keras.layers import Dense
+        HAS_TENSORFLOW = True
+    except ImportError:
+        HAS_TENSORFLOW = False
+else:
+    HAS_TENSORFLOW = False
 
 logger = logging.getLogger(__name__)
 
@@ -36,13 +46,15 @@ class AnomalyDetector:
                 self.scaler = joblib.load(self.scaler_path)
             if os.path.exists(self.if_model_path):
                 self.if_model = joblib.load(self.if_model_path)
-            if os.path.exists(self.ae_model_path):
+            if HAS_TENSORFLOW and os.path.exists(self.ae_model_path):
                 self.ae_model = load_model(self.ae_model_path)
         except Exception as e:
             logger.warning(f"Failed to load models (will need retraining): {e}")
 
-    def build_autoencoder(self, input_dim: int) -> Sequential:
+    def build_autoencoder(self, input_dim: int):
         """Builds a simple autoencoder model."""
+        if not HAS_TENSORFLOW:
+            return None
         model = Sequential([
             Dense(16, activation='relu', input_shape=(input_dim,)),
             Dense(8, activation='relu'),
@@ -74,11 +86,13 @@ class AnomalyDetector:
         joblib.dump(self.if_model, self.if_model_path)
         
         # Train Autoencoder
-        self.ae_model = self.build_autoencoder(X_scaled.shape[1])
-        self.ae_model.fit(X_scaled, X_scaled, epochs=50, batch_size=16, validation_split=0.1, verbose=0)
-        self.ae_model.save(self.ae_model_path)
-        
-        logger.info("Training complete. Models saved.")
+        if HAS_TENSORFLOW:
+            self.ae_model = self.build_autoencoder(X_scaled.shape[1])
+            self.ae_model.fit(X_scaled, X_scaled, epochs=50, batch_size=16, validation_split=0.1, verbose=0)
+            self.ae_model.save(self.ae_model_path)
+            logger.info("Isolation Forest and Autoencoder training complete.")
+        else:
+            logger.info("Isolation Forest training complete. Autoencoder skipped (LOW_MEMORY_MODE).")
 
     def predict(self, metrics: dict) -> dict:
         """
@@ -102,15 +116,16 @@ class AnomalyDetector:
         if_pred = self.if_model.predict(X_scaled)[0] # -1 for anomaly, 1 for normal
         
         # Autoencoder prediction (reconstruction error)
-        ae_pred = self.ae_model.predict(X_scaled, verbose=0)
-        mse = np.mean(np.power(X_scaled - ae_pred, 2))
-        
-        # Combine logic: if IF says anomaly OR MSE > threshold
-        ae_threshold = 2.0
-        is_anomaly = bool(if_pred == -1 or mse > ae_threshold)
-        
-        # Normalize score
-        score = float(mse)
+        if HAS_TENSORFLOW and self.ae_model:
+            ae_pred = self.ae_model.predict(X_scaled, verbose=0)
+            mse = np.mean(np.power(X_scaled - ae_pred, 2))
+            is_anomaly = bool(if_pred == -1 or mse > 2.0)
+            score = float(mse)
+        else:
+            # Fallback to only Isolation Forest
+            is_anomaly = bool(if_pred == -1)
+            score = 1.0 if is_anomaly else 0.0
+            mse = 0.0
         
         return {
             "is_anomaly": is_anomaly,
