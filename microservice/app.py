@@ -61,6 +61,10 @@ async def startup_event():
     MEMORY_USAGE_GAUGE.set(state["memory_allocated"])
     logger.info("Application started. Metrics initialized.")
 
+@app.get("/")
+def read_root():
+    return {"message": "AIOps Microservice is running. Visit /docs for the API documentation."}
+
 @app.get("/health")
 def health_check():
     if state["error_mode"]:
