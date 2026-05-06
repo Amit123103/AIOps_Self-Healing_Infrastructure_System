@@ -1,0 +1,64 @@
+{
+  "title": "AIOps Dashboard",
+  "uid": "aiops1",
+  "panels": [
+    {
+      "title": "CPU Usage (%)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "app_cpu_usage_percent",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Memory Usage (Bytes)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "app_memory_usage_bytes",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Request Latency",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "rate(app_request_latency_seconds_sum[1m]) / rate(app_request_latency_seconds_count[1m])",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Error Rate",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "rate(app_requests_total{http_status=~\"5..\"}[1m])",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Anomaly Score",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "aiops_anomaly_score",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 38,
+  "timezone": "browser",
+  "refresh": "5s"
+}

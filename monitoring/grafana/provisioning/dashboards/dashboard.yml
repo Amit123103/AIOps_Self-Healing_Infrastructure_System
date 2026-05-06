@@ -1,0 +1,12 @@
+# === FILE: monitoring/grafana/provisioning/dashboards/dashboard.yml ===
+apiVersion: 1
+
+providers:
+  - name: 'AIOps Dashboards'
+    orgId: 1
+    folder: 'AIOps'
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

@@ -1,0 +1,29 @@
+# === FILE: k8s/monitoring.yaml ===
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: microservice-monitor
+  namespace: aiops
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: microservice
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 15s
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: aiops
+  labels:
+    grafana_dashboard: "1"
+data:
+  aiops-dashboard.json: |
+    {
+      "title": "AIOps Dashboard"
+    }

@@ -1,0 +1,14 @@
+{
+  "index_patterns": ["aiops-logs-*"],
+  "template": {
+    "mappings": {
+      "properties": {
+        "@timestamp": { "type": "date" },
+        "message": { "type": "text" },
+        "level": { "type": "keyword" },
+        "service": { "type": "keyword" },
+        "prediction_class": { "type": "keyword" }
+      }
+    }
+  }
+}

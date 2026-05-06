@@ -1,0 +1,21 @@
+timestamp,message,label
+1700000000,Service started successfully,normal
+1700000060,User logged in,normal
+1700000120,Data fetched from DB,normal
+1700000180,High memory usage detected,warning
+1700000240,CPU utilization at 85%,warning
+1700000300,Database connection failed,critical
+1700000360,Timeout error while calling external API,critical
+1700000420,Request completed in 12ms,normal
+1700000480,Background job finished,normal
+1700000540,Disk space running low on /var/log,warning
+1700000600,Out of memory error,critical
+1700000660,Null pointer exception in billing module,critical
+1700000720,Health check passed,normal
+1700000780,New configuration loaded,normal
+1700000840,Connection reset by peer,warning
+1700000900,Payment gateway unreachable,critical
+1700000960,User logged out,normal
+1700001020,Cache hit ratio 95%,normal
+1700001080,Slow query detected in DB,warning
+1700001140,Application crashed unexpectedly,critical
