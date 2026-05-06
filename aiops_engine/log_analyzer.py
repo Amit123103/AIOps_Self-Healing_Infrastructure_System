@@ -28,12 +28,15 @@ class LogAnalyzer:
         self._load_models()
 
     def _load_models(self):
-        if os.path.exists(self.vectorizer_path):
-            self.vectorizer = joblib.load(self.vectorizer_path)
-        if os.path.exists(self.classifier_path):
-            self.classifier = joblib.load(self.classifier_path)
-        if os.path.exists(self.encoder_path):
-            self.encoder = joblib.load(self.encoder_path)
+        try:
+            if os.path.exists(self.vectorizer_path):
+                self.vectorizer = joblib.load(self.vectorizer_path)
+            if os.path.exists(self.classifier_path):
+                self.classifier = joblib.load(self.classifier_path)
+            if os.path.exists(self.encoder_path):
+                self.encoder = joblib.load(self.encoder_path)
+        except Exception as e:
+            logger.warning(f"Failed to load log models (will need retraining): {e}")
 
     def train(self, data_path: str):
         """

@@ -54,12 +54,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Setup Kubeval
-        uses: instrumenta/setup-kubeval@v1
+      - name: Setup Kubeconform
+        run: |
+          wget https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz
+          tar xf kubeconform-linux-amd64.tar.gz
+          sudo mv kubeconform /usr/local/bin/
 
       - name: Validate YAML
         run: |
-          kubeval --strict --ignore-missing-schemas k8s/*.yaml
+          kubeconform -strict -ignore-missing-schemas k8s/*.yaml
 
   build-and-push-docker:
     name: Build & Push to GHCR

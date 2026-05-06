@@ -46,9 +46,12 @@ class FeedbackLoop:
         conn.close()
 
     def _load_model(self):
-        if os.path.exists(self.model_path) and os.path.exists(self.encoder_path):
-            self.model = joblib.load(self.model_path)
-            self.encoder = joblib.load(self.encoder_path)
+        try:
+            if os.path.exists(self.model_path) and os.path.exists(self.encoder_path):
+                self.model = joblib.load(self.model_path)
+                self.encoder = joblib.load(self.encoder_path)
+        except Exception as e:
+            logger.warning(f"Failed to load feedback models: {e}")
 
     def record_action(self, metrics: dict, log_class: str, action: str, success: bool):
         """Records an action and its outcome (triplet)."""

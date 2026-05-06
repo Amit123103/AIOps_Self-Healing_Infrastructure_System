@@ -31,12 +31,15 @@ class AnomalyDetector:
         self._load_models()
 
     def _load_models(self):
-        if os.path.exists(self.scaler_path):
-            self.scaler = joblib.load(self.scaler_path)
-        if os.path.exists(self.if_model_path):
-            self.if_model = joblib.load(self.if_model_path)
-        if os.path.exists(self.ae_model_path):
-            self.ae_model = load_model(self.ae_model_path)
+        try:
+            if os.path.exists(self.scaler_path):
+                self.scaler = joblib.load(self.scaler_path)
+            if os.path.exists(self.if_model_path):
+                self.if_model = joblib.load(self.if_model_path)
+            if os.path.exists(self.ae_model_path):
+                self.ae_model = load_model(self.ae_model_path)
+        except Exception as e:
+            logger.warning(f"Failed to load models (will need retraining): {e}")
 
     def build_autoencoder(self, input_dim: int) -> Sequential:
         """Builds a simple autoencoder model."""
